@@ -1,0 +1,1228 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenApi",
+    "description": "OpenAPI specification",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "default"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/settings": {
+      "get": {
+        "tags": [
+          "settings-controller"
+        ],
+        "operationId": "getSettings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsRespDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "settings-controller"
+        ],
+        "operationId": "updateSettings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsReqDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsRespDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/friends/search": {
+      "post": {
+        "tags": [
+          "friend-controller"
+        ],
+        "operationId": "searchFriends",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchFriendRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FriendResponseDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/friends/add": {
+      "post": {
+        "tags": [
+          "friend-controller"
+        ],
+        "operationId": "addFriend",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFriendRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/FriendResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/firms": {
+      "post": {
+        "tags": [
+          "firm-controller"
+        ],
+        "operationId": "listFirms",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FirmListRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FirmDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/firms/upgrade": {
+      "post": {
+        "tags": [
+          "firm-controller"
+        ],
+        "operationId": "upgradeToFirm",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpgradeFirmRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/expense": {
+      "post": {
+        "tags": [
+          "expense-controller"
+        ],
+        "operationId": "createExpense",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpenseRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PairExpenseIncome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/card/topup": {
+      "post": {
+        "tags": [
+          "card-controller"
+        ],
+        "operationId": "topup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopupRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "tags": [
+          "authentication-controller"
+        ],
+        "operationId": "registerUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signout": {
+      "post": {
+        "tags": [
+          "authentication-controller"
+        ],
+        "operationId": "signOutUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "authentication-controller"
+        ],
+        "operationId": "loginUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": [
+          "user-controller"
+        ],
+        "operationId": "getMyUserAccount",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "user-controller"
+        ],
+        "operationId": "deleteUser",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/history": {
+      "get": {
+        "tags": [
+          "history-controller"
+        ],
+        "operationId": "getHistory",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistorySummaryDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/history/recent/users": {
+      "get": {
+        "tags": [
+          "history-controller"
+        ],
+        "operationId": "getRecentUserTransactions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransactionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/history/recent/firms": {
+      "get": {
+        "tags": [
+          "history-controller"
+        ],
+        "operationId": "getRecentFirmPayments",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransactionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/friends": {
+      "get": {
+        "tags": [
+          "friend-controller"
+        ],
+        "operationId": "getFriends",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FriendResponseDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alerts/low-balance": {
+      "get": {
+        "tags": [
+          "alert-controller"
+        ],
+        "operationId": "checkLowBalance",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LowBalanceAlertDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/card": {
+      "delete": {
+        "tags": [
+          "card-controller"
+        ],
+        "operationId": "deleteCard",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats": {
+      "get": {
+        "tags": [
+          "stats-controller"
+        ],
+        "operationId": "getDashboardStats",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "stats-controller"
+        ],
+        "operationId": "getDashboardStats_3",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "stats-controller"
+        ],
+        "operationId": "getDashboardStats_2",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "stats-controller"
+        ],
+        "operationId": "getDashboardStats_5",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "tags": [
+          "stats-controller"
+        ],
+        "operationId": "getDashboardStats_6",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "tags": [
+          "stats-controller"
+        ],
+        "operationId": "getDashboardStats_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDTO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "stats-controller"
+        ],
+        "operationId": "getDashboardStats_4",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStatsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateSettingsReqDTO": {
+        "type": "object",
+        "properties": {
+          "lowBalanceEnabled": {
+            "type": "boolean"
+          },
+          "lowBalanceThreshold": {
+            "type": "number"
+          },
+          "newPin": {
+            "type": "string"
+          }
+        }
+      },
+      "SettingsRespDTO": {
+        "required": [
+          "hasPinSet",
+          "lowBalanceEnabled",
+          "lowBalanceThreshold"
+        ],
+        "type": "object",
+        "properties": {
+          "lowBalanceEnabled": {
+            "type": "boolean"
+          },
+          "lowBalanceThreshold": {
+            "type": "number"
+          },
+          "hasPinSet": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SearchFriendRequestDTO": {
+        "required": [
+          "nameOrMail"
+        ],
+        "type": "object",
+        "properties": {
+          "nameOrMail": {
+            "type": "string"
+          }
+        }
+      },
+      "FriendResponseDTO": {
+        "required": [
+          "email",
+          "fullName",
+          "iban"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "iban": {
+            "type": "string"
+          }
+        }
+      },
+      "AddFriendRequestDTO": {
+        "required": [
+          "iban"
+        ],
+        "type": "object",
+        "properties": {
+          "iban": {
+            "type": "string"
+          }
+        }
+      },
+      "FirmListRequestDTO": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "BILLS",
+              "ENTERTAINMENT",
+              "FOOD",
+              "SHOPPING",
+              "TRANSPORTATION",
+              "USER"
+            ]
+          }
+        }
+      },
+      "FirmDTO": {
+        "required": [
+          "category",
+          "email",
+          "fullName",
+          "iban"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "BILLS",
+              "ENTERTAINMENT",
+              "FOOD",
+              "SHOPPING",
+              "TRANSPORTATION",
+              "USER"
+            ]
+          },
+          "iban": {
+            "type": "string"
+          }
+        }
+      },
+      "UpgradeFirmRequestDTO": {
+        "required": [
+          "category"
+        ],
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "BILLS",
+              "ENTERTAINMENT",
+              "FOOD",
+              "SHOPPING",
+              "TRANSPORTATION",
+              "USER"
+            ]
+          }
+        }
+      },
+      "Unit": {
+        "type": "object"
+      },
+      "ExpenseRequestDTO": {
+        "required": [
+          "amount",
+          "description",
+          "ibanReceiver"
+        ],
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "ibanReceiver": {
+            "type": "string"
+          },
+          "pin": {
+            "type": "string"
+          }
+        }
+      },
+      "Expense": {
+        "required": [
+          "amount",
+          "category",
+          "date",
+          "description",
+          "ibanReceiver",
+          "ibanSender"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ibanReceiver": {
+            "type": "string"
+          },
+          "ibanSender": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "BILLS",
+              "ENTERTAINMENT",
+              "FOOD",
+              "SHOPPING",
+              "TRANSPORTATION",
+              "USER"
+            ]
+          }
+        }
+      },
+      "Income": {
+        "required": [
+          "amount",
+          "date",
+          "description",
+          "ibanReceiver",
+          "ibanSender"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ibanSender": {
+            "type": "string"
+          },
+          "ibanReceiver": {
+            "type": "string"
+          }
+        }
+      },
+      "PairExpenseIncome": {
+        "required": [
+          "first",
+          "second"
+        ],
+        "type": "object",
+        "properties": {
+          "first": {
+            "$ref": "#/components/schemas/Expense"
+          },
+          "second": {
+            "$ref": "#/components/schemas/Income"
+          }
+        }
+      },
+      "TopupRequestDTO": {
+        "required": [
+          "amount"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "UserRequestDTO": {
+        "required": [
+          "email",
+          "fullName",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequestDTO": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "JwtResponse": {
+        "required": [
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "AccountResponseDTO": {
+        "required": [
+          "balance",
+          "category",
+          "iban"
+        ],
+        "type": "object",
+        "properties": {
+          "card": {
+            "$ref": "#/components/schemas/CardResponseDTO"
+          },
+          "history": {
+            "$ref": "#/components/schemas/HistorySummaryDTO"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "BILLS",
+              "ENTERTAINMENT",
+              "FOOD",
+              "SHOPPING",
+              "TRANSPORTATION",
+              "USER"
+            ]
+          },
+          "iban": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "number"
+          }
+        }
+      },
+      "CardResponseDTO": {
+        "required": [
+          "cardNumber",
+          "cardNumberMasked",
+          "cvvNumber",
+          "expirationDate",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "cardNumberMasked": {
+            "type": "string"
+          },
+          "cardNumber": {
+            "type": "string"
+          },
+          "expirationDate": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "month": {
+                "type": "string",
+                "enum": [
+                  "JANUARY",
+                  "FEBRUARY",
+                  "MARCH",
+                  "APRIL",
+                  "MAY",
+                  "JUNE",
+                  "JULY",
+                  "AUGUST",
+                  "SEPTEMBER",
+                  "OCTOBER",
+                  "NOVEMBER",
+                  "DECEMBER"
+                ]
+              },
+              "leapYear": {
+                "type": "boolean"
+              },
+              "monthValue": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          "cvvNumber": {
+            "type": "string"
+          }
+        }
+      },
+      "HistorySummaryDTO": {
+        "required": [
+          "lastTransactions",
+          "totalExpenses",
+          "totalIncomes"
+        ],
+        "type": "object",
+        "properties": {
+          "totalIncomes": {
+            "type": "number"
+          },
+          "totalExpenses": {
+            "type": "number"
+          },
+          "lastTransactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionDTO"
+            }
+          }
+        }
+      },
+      "TransactionDTO": {
+        "required": [
+          "amount",
+          "date",
+          "fromOrTo",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "INCOME",
+              "EXPENSE"
+            ]
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "ibanSender": {
+            "type": "string"
+          },
+          "ibanReceiver": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fromOrTo": {
+            "type": "string"
+          }
+        }
+      },
+      "UserResponseDTO": {
+        "required": [
+          "email",
+          "fullName"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "account": {
+            "$ref": "#/components/schemas/AccountResponseDTO"
+          }
+        }
+      },
+      "LowBalanceAlertDTO": {
+        "required": [
+          "shouldAlert"
+        ],
+        "type": "object",
+        "properties": {
+          "shouldAlert": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "number"
+          }
+        }
+      },
+      "CategorySpendingDTO": {
+        "required": [
+          "category",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "BILLS",
+              "ENTERTAINMENT",
+              "FOOD",
+              "SHOPPING",
+              "TRANSPORTATION",
+              "USER"
+            ]
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      },
+      "DashboardStatsDTO": {
+        "required": [
+          "monthSummary",
+          "spendingByCategory",
+          "weekSummary",
+          "weeklySpending"
+        ],
+        "type": "object",
+        "properties": {
+          "monthSummary": {
+            "$ref": "#/components/schemas/SummaryDTO"
+          },
+          "weekSummary": {
+            "$ref": "#/components/schemas/SummaryDTO"
+          },
+          "weeklySpending": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WeeklyBarDTO"
+            }
+          },
+          "spendingByCategory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategorySpendingDTO"
+            }
+          }
+        }
+      },
+      "SummaryDTO": {
+        "required": [
+          "expense",
+          "incomes",
+          "netSavings"
+        ],
+        "type": "object",
+        "properties": {
+          "incomes": {
+            "type": "number"
+          },
+          "expense": {
+            "type": "number"
+          },
+          "netSavings": {
+            "type": "number"
+          }
+        }
+      },
+      "WeeklyBarDTO": {
+        "required": [
+          "day",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string"
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
