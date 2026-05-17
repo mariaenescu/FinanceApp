@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import Layout from '../components/Layout';
 import { financeService } from '../api/services';
 import type { DashboardStatsDTO } from '../types';
@@ -6,10 +6,11 @@ import WeeklySpendingChart from '../components/statistics/WeeklySpendingChart';
 import CategorySpendingChart from '../components/statistics/CategorySpendingChart';
 import SummaryCards from '../components/SummaryCards';
 import { Loader2, AlertCircle } from 'lucide-react';
+import { View, Text, Button } from '../components/ui';
 
 type Period = 'month' | 'week';
 
-const StatisticsPage: React.FC = () => {
+export default function StatisticsPage() {
   const [stats, setStats] = useState<DashboardStatsDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,79 +74,68 @@ const StatisticsPage: React.FC = () => {
   if (loading && !stats) {
     return (
       <Layout>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--text-secondary)' }}>
+        <View flex align="center" justify="center" style={{ height: '60vh' }}>
           <Loader2 className="animate-spin" size={32} />
-          <span style={{ marginLeft: '12px', fontSize: '1.2rem' }}>Analyzing your data...</span>
-        </div>
+          <Text size={19} style={{ marginLeft: 12 }}>Analyzing your data...</Text>
+        </View>
       </Layout>
     );
   }
 
   return (
     <Layout>
-      <div className="fade-in">
-        <header style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <div>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '8px' }}>Analytics</h1>
-            <p style={{ color: 'var(--text-secondary)' }}>Detailed insights into your financial health</p>
-          </div>
+      <View className="fade-in">
+        <header style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <View>
+            <Text variant="h1" style={{ fontSize: 40, marginBottom: 8 }}>Analytics</Text>
+            <Text color="#848484">Detailed insights into your financial health</Text>
+          </View>
 
-          <div style={{ display: 'flex', background: '#e5e7eb', borderRadius: '12px', padding: '4px' }}>
-            <button
+          <View flex style={{ background: '#e5e7eb', borderRadius: 12, padding: 4 }}>
+            <Button
+              variant="ghost"
               onClick={() => setPeriod('week')}
               style={{
-                padding: '8px 20px',
-                borderRadius: '8px',
-                fontSize: '0.9rem',
-                fontWeight: 600,
                 background: period === 'week' ? 'white' : 'transparent',
                 boxShadow: period === 'week' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
-                transition: '0.3s'
+                color: period === 'week' ? '#333333' : '#848484'
               }}
             >
               Weekly
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() => setPeriod('month')}
               style={{
-                padding: '8px 20px',
-                borderRadius: '8px',
-                fontSize: '0.9rem',
-                fontWeight: 600,
                 background: period === 'month' ? 'white' : 'transparent',
                 boxShadow: period === 'month' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
-                transition: '0.3s'
+                color: period === 'month' ? '#333333' : '#848484'
               }}
             >
               Monthly
-            </button>
-          </div>
+            </Button>
+          </View>
         </header>
 
         {error && (
-          <div style={{
+          <View flex align="center" gap={12} style={{
             background: '#fef2f2',
             border: '1px solid #fee2e2',
             color: '#dc2626',
-            padding: '16px',
-            borderRadius: '16px',
-            marginBottom: '32px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px'
+            padding: 16,
+            borderRadius: 16,
+            marginBottom: 32
           }}>
             <AlertCircle size={20} />
-            <span>{error}</span>
-            <button onClick={() => fetchStats(weekOffset)} style={{ marginLeft: 'auto', fontWeight: 700, textDecoration: 'underline' }}>Retry</button>
-          </div>
+            <Text color="#dc2626">{error}</Text>
+            <Button variant="ghost" onClick={() => fetchStats(weekOffset)} style={{ marginLeft: 'auto', color: '#dc2626', textDecoration: 'underline' }}>Retry</Button>
+          </View>
         )}
 
-        <div style={{ display: 'grid', gap: '32px' }}>
-          {/* Top Summary Row */}
+        <View grid gap={32}>
           <SummaryCards data={summaryData} period={period} />
 
-          {/* Charts Row */}
-          <div style={{ display: 'grid', gap: '32px' }}>
+          <View grid gap={32}>
             <WeeklySpendingChart
               data={stats?.weeklySpending || []}
               range={weekRange}
@@ -154,14 +144,10 @@ const StatisticsPage: React.FC = () => {
               onNext={handleNextWeek}
             />
 
-            <CategorySpendingChart
-              rows={stats?.spendingByCategory || []}
-            />
-          </div>
-        </div>
-      </div>
+            <CategorySpendingChart rows={stats?.spendingByCategory || []} />
+          </View>
+        </View>
+      </View>
     </Layout>
   );
-};
-
-export default StatisticsPage;
+}

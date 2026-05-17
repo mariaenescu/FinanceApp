@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -8,6 +8,7 @@ import {
 } from 'chart.js';
 import type { ChartOptions } from 'chart.js';
 import { PieChart } from 'lucide-react';
+import { Card, View, Text, List, ListItem } from '../ui';
 
 ChartJS.register(ArcElement, Tooltip, Legend, PieController);
 
@@ -20,7 +21,7 @@ interface CategorySpendingChartProps {
   rows: CategoryRow[];
 }
 
-const CategorySpendingChart: React.FC<CategorySpendingChartProps> = ({ rows }) => {
+export default function CategorySpendingChart({ rows }: CategorySpendingChartProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<ChartJS | null>(null);
 
@@ -87,51 +88,34 @@ const CategorySpendingChart: React.FC<CategorySpendingChartProps> = ({ rows }) =
   }, [rows, total]);
 
   return (
-    <div className="card">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-        <div style={{ background: '#fef2f2', color: '#dc2626', padding: '8px', borderRadius: '100%' }}>
-          <PieChart size={20} />
-        </div>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Spending by Category</h2>
-      </div>
+    <Card padding={24}>
+      <View flex align="center" gap={12} style={{ marginBottom: 24 }}>
+        <View style={{ background: '#bbd1ed', color: '#4285F4' }} padding={10} borderRadius={12}>
+          <PieChart size={22} />
+        </View>
+        <Text variant="h2" size={19}>Spending by Category</Text>
+      </View>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 0.8fr)', gap: '32px', alignItems: 'center' }}>
-        <div style={{ position: 'relative', height: '300px' }}>
+      <View grid gridCols="minmax(0, 1.2fr) minmax(0, 0.8fr)" gap={32} align="center">
+        <View style={{ position: 'relative', height: 300 }}>
           <canvas ref={canvasRef} />
-        </div>
+        </View>
 
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '12px' }}>
+        <List gap={12}>
           {filtered.map((r, i) => (
-            <li key={r.category} style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '12px', 
-              padding: '10px 14px', 
-              borderRadius: '12px', 
-              background: '#f8fafc',
-              border: '1px solid var(--line)'
-            }}>
-              <div style={{ 
-                width: '12px', 
-                height: '12px', 
-                borderRadius: '50%', 
-                backgroundColor: palette[i % palette.length] 
-              }} />
-              <div style={{ flex: 1, fontWeight: 600, fontSize: '0.9rem' }}>{r.category}</div>
-              <div style={{ fontWeight: 700, color: 'var(--accent-primary)', fontSize: '0.9rem' }}>
-                {formatPercent(r.total)}
-              </div>
-            </li>
+            <ListItem key={r.category} flex align="center" gap={12} padding="12px 16px" borderRadius={12} bg="#ffffff" border="1px solid #e5e7eb">
+              <View style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: palette[i % palette.length] }} />
+              <Text weight={600} size={15} style={{ flex: 1 }}>{r.category}</Text>
+              <Text weight={700} color="#4285F4" size={15}>{formatPercent(r.total)}</Text>
+            </ListItem>
           ))}
           {filtered.length === 0 && (
-            <li style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textAlign: 'center' }}>
-              No category data
-            </li>
+            <ListItem style={{ textAlign: 'center', padding: '20px 0' }}>
+              <Text color="#848484" size={15}>No category data</Text>
+            </ListItem>
           )}
-        </ul>
-      </div>
-    </div>
+        </List>
+      </View>
+    </Card>
   );
-};
-
-export default CategorySpendingChart;
+}

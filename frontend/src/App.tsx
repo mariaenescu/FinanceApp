@@ -10,20 +10,26 @@ import StatisticsPage from './pages/StatisticsPage';
 import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import SettingsPage from './pages/SettingsPage';
 
-// Simple route guards
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('authToken');
-  if (!token) return <Navigate to="/login" replace />;
-  return <>{children}</>;
-};
 
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('authToken');
-  if (token) return <Navigate to="/main" replace />;
-  return <>{children}</>;
-};
+  if (token) {
+    return <Navigate to="/main" replace />;
+  }
 
-const App: React.FC = () => {
+  return <>{children}</>;
+}
+
+export default function App() {
   return (
     <Router>
       <Routes>
@@ -84,6 +90,4 @@ const App: React.FC = () => {
       </Routes>
     </Router>
   );
-};
-
-export default App;
+}

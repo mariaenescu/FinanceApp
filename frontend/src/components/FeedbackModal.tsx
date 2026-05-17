@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { X, Star, CheckCircle2, Send } from 'lucide-react';
+import { X, CheckCircle2, Send } from 'lucide-react';
 import { financeService } from '../api/services';
 import type { FeedbackRequestDTO } from '../types';
+import { Card, View, Text, Button, Select, Input } from './ui';
 
 interface FeedbackModalProps {
   onClose: () => void;
 }
 
-const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose }) => {
+export default function FeedbackModal({ onClose }: FeedbackModalProps) {
   const [experience, setExperience] = useState('Excellent');
   const [recommend, setRecommend] = useState<boolean | null>(null);
   const [likedFeatures, setLikedFeatures] = useState<string[]>([]);
@@ -49,204 +50,82 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose }) => {
     }
   };
 
+  const expOptions = [
+    { label: 'Excellent 🚀', value: 'Excellent' },
+    { label: 'Good 👍', value: 'Good' },
+    { label: 'Average 😐', value: 'Average' },
+    { label: 'Poor 👎', value: 'Poor' },
+  ];
+
   if (isSubmitted) {
     return (
-      <div style={modalOverlayStyle}>
-        <div className="card fade-in" style={{ ...modalContainerStyle, textAlign: 'center', padding: '40px' }}>
-          <div style={{ color: 'var(--accent-primary)', marginBottom: '20px' }}>
+      <View style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 2000, backdropFilter: 'blur(4px)' }} flex align="center" justify="center">
+        <Card className="fade-in" style={{ width: '100%', maxWidth: 420, textAlign: 'center' }} padding="40px 32px">
+          <View style={{ color: '#10b981', marginBottom: 20 }}>
             <CheckCircle2 size={64} style={{ margin: '0 auto' }} />
-          </div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '12px' }}>Thank You!</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
-            Your feedback helps us make FinanceApp better for everyone.
-          </p>
-        </div>
-      </div>
+          </View>
+          <Text variant="h2" style={{ marginBottom: 12 }}>Thank You!</Text>
+          <Text color="#848484">Your feedback helps us make FinanceApp better for everyone.</Text>
+        </Card>
+      </View>
     );
   }
 
   return (
-    <div style={modalOverlayStyle}>
-      <div className="card fade-in" style={modalContainerStyle}>
-        <div style={modalHeaderStyle}>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 700 }}>Feedback</h3>
-          <button onClick={onClose} style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>
-            <X size={28} />
-          </button>
-        </div>
+    <View style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 2000, backdropFilter: 'blur(4px)' }} padding={16} flex align="center" justify="center">
+      <Card className="fade-in" style={{ width: '100%', maxWidth: 520, maxHeight: '90vh', overflowY: 'auto' }} padding={0}>
+        <View style={{ padding: '20px 24px', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10 }} flex align="center" justify="space-between">
+          <Text variant="h3">Feedback</Text>
+          <Button variant="icon" onClick={onClose} style={{ color: '#848484' }}><X size={24} /></Button>
+        </View>
 
-        <form onSubmit={handleSubmit} style={{ padding: '24px' }}>
-          <p style={{ marginBottom: '20px', color: 'var(--text-secondary)' }}>
-            Great! Your transaction was successful. How was your experience?
-          </p>
+        <form onSubmit={handleSubmit} style={{ padding: 24 }}>
+          <Text color="#848484" style={{ marginBottom: 20 }}>Great! Your transaction was successful. How was your experience?</Text>
 
-          <div className="form-group" style={{ marginBottom: '20px' }}>
-            <label>Rate your experience</label>
-            <select
-              value={experience}
-              onChange={(e) => setExperience(e.target.value)}
-              className="form-control"
-              style={inputStyle}
-            >
-              <option value="Excellent">Excellent 🚀</option>
-              <option value="Good">Good 👍</option>
-              <option value="Average">Average 😐</option>
-              <option value="Poor">Poor 👎</option>
-            </select>
-          </div>
+          <View className="form-group" style={{ marginBottom: 20 }}>
+            <Text variant="label" style={{ marginBottom: 8 }}>Rate your experience</Text>
+            <Select value={experience} onChange={(e) => setExperience(e.target.value)} options={expOptions} />
+          </View>
 
-          <div className="form-group" style={{ marginBottom: '20px' }}>
-            <label style={{ marginBottom: '10px', display: 'block' }}>Would you recommend us?</label>
-            <div style={{ display: 'flex', gap: '20px' }}>
-              <label style={radioLabelStyle}>
-                <input
-                  type="radio"
-                  name="recommend"
-                  checked={recommend === true}
-                  onChange={() => setRecommend(true)}
-                  style={inputResetStyle}
-                />
+          <View className="form-group" style={{ marginBottom: 20 }}>
+            <Text variant="label" style={{ marginBottom: 12 }}>Would you recommend us?</Text>
+            <View flex gap={24}>
+              <Text variant="label" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 500 }}>
+                <Input type="radio" name="recommend" checked={recommend === true} onChange={() => setRecommend(true)} style={{ width: 18, height: 18, cursor: 'pointer', padding: 0 }} />
                 <span>Yes, absolutely</span>
-              </label>
-              <label style={radioLabelStyle}>
-                <input
-                  type="radio"
-                  name="recommend"
-                  checked={recommend === false}
-                  onChange={() => setRecommend(false)}
-                  style={inputResetStyle}
-                />
+              </Text>
+              <Text variant="label" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 500 }}>
+                <Input type="radio" name="recommend" checked={recommend === false} onChange={() => setRecommend(false)} style={{ width: 18, height: 18, cursor: 'pointer', padding: 0 }} />
                 <span>Maybe not yet</span>
-              </label>
-            </div>
-          </div>
+              </Text>
+            </View>
+          </View>
 
-          <div className="form-group" style={{ marginBottom: '20px' }}>
-            <label style={{ marginBottom: '10px', display: 'block' }}>What did you like most?</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <View className="form-group" style={{ marginBottom: 24 }}>
+            <Text variant="label" style={{ marginBottom: 12 }}>What did you like most?</Text>
+            <View grid gridCols="1fr 1fr" gap={12}>
               {features.map(feature => (
-                <label key={feature} style={checkboxLabelStyle}>
-                  <input
-                    type="checkbox"
-                    checked={likedFeatures.includes(feature)}
-                    onChange={() => handleCheckboxChange(feature)}
-                    style={inputResetStyle}
-                  />
+                <Text variant="label" key={feature} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 500 }}>
+                  <Input type="checkbox" checked={likedFeatures.includes(feature)} onChange={() => handleCheckboxChange(feature)} style={{ width: 18, height: 18, cursor: 'pointer', padding: 0 }} />
                   <span>{feature}</span>
-                </label>
+                </Text>
               ))}
-            </div>
-          </div>
+            </View>
+          </View>
 
-          {/* Textarea */}
-          <div className="form-group" style={{ marginBottom: '24px' }}>
-            <label>Any additional comments?</label>
-            <textarea
-              value={comments}
-              onChange={(e) => setComments(e.target.value)}
-              placeholder="Tell us more..."
-              style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }}
-            />
-          </div>
+          <View className="form-group" style={{ marginBottom: 28 }}>
+            <Text variant="label" style={{ marginBottom: 8 }}>Any additional comments?</Text>
+            <Input multiline value={comments} onChange={(e) => setComments(e.target.value)} placeholder="Tell us more..." style={{ minHeight: 80, resize: 'vertical' }} />
+          </View>
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-            <button
-              type="button"
-              onClick={onClose}
-              style={{ padding: '12px 24px', borderRadius: '10px', fontWeight: 600 }}
-            >
-              Skip
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn-primary"
-              style={{ padding: '12px 32px', width: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}
-            >
-              {isSubmitting ? 'Sending...' : (
-                <>
-                  <Send size={18} />
-                  Submit Feedback
-                </>
-              )}
-            </button>
-          </div>
+          <View flex gap={12} justify="flex-end">
+            <Button variant="ghost" type="button" onClick={onClose} style={{ color: '#848484' }}>Skip</Button>
+            <Button variant="primary" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Sending...' : <><Send size={18} />Submit Feedback</>}
+            </Button>
+          </View>
         </form>
-      </div>
-    </div>
+      </Card>
+    </View>
   );
-};
-
-const modalOverlayStyle: React.CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  backgroundColor: 'transparent',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 2000,
-  backdropFilter: 'blur(6px)'
-};
-
-const modalContainerStyle: React.CSSProperties = {
-  width: '100%',
-  maxWidth: '520px',
-  padding: 0,
-  maxHeight: '90vh',
-  overflowY: 'auto'
-};
-
-const modalHeaderStyle: React.CSSProperties = {
-  padding: '20px 24px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  borderBottom: '1px solid var(--border-color)',
-  position: 'sticky',
-  top: 0,
-  backgroundColor: 'white',
-  zIndex: 10
-};
-
-const iconBadgeStyle: React.CSSProperties = {
-  backgroundColor: 'var(--accent-light)',
-  color: 'var(--accent-primary)',
-  padding: '10px',
-  borderRadius: '12px'
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '12px',
-  borderRadius: '10px',
-  border: '1px solid var(--border-color)',
-  fontSize: '1rem',
-  marginTop: '6px'
-};
-
-const radioLabelStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '10px',
-  cursor: 'pointer',
-  fontSize: '1rem',
-  fontWeight: 500
-};
-
-const checkboxLabelStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
-  cursor: 'pointer',
-  fontSize: '1rem',
-  padding: '6px 0'
-};
-
-const inputResetStyle: React.CSSProperties = {
-  width: '20px',
-  height: '20px',
-  margin: 0,
-  cursor: 'pointer'
-};
-
-export default FeedbackModal;
+}

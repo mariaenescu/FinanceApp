@@ -1,18 +1,17 @@
-import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { 
-  Home, 
-  History, 
-  Users, 
-  Building2, 
-  PieChart, 
-  Settings, 
+import {
+  Home,
+  History,
+  Users,
+  Building2,
+  PieChart,
+  Settings,
   LogOut,
   CreditCard
 } from 'lucide-react';
-import SidebarAccountCard from './SidebarAccountCard';
+import { View, Text, Button } from './ui';
 
-const Navbar: React.FC = () => {
+export default function Navbar() {
   const navigate = useNavigate();
 
   const navItems = [
@@ -29,31 +28,17 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <aside className="sidebar">
-      <div className="brand" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '30px 20px' }}>
-        <div style={{ 
-          background: 'linear-gradient(135deg, #7352c3 0%, #1d2ba5 100%)', 
-          borderRadius: '16px', 
-          width: '44px', 
-          height: '44px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          color: '#bbd1ed'
-        }}>
-          <CreditCard size={24} />
-        </div>
-        <div>
-          <div style={{ fontWeight: 700, fontSize: '1.5rem', letterSpacing: '0.8px' }}>FinanceApp</div>
-          <div style={{ fontSize: '0.85rem', color: '#9aa3b2', letterSpacing: '0.6px' }}>Financial Management</div>
-        </div>
-      </div>
+    <View className="sidebar" flex direction="column" style={{ height: '100vh' }}>
+      <View flex align="center" gap={12} padding="24px 16px">
+        <View style={{ width: 40, height: 40, backgroundColor: '#bbd1ed', color: '#4285F4' }} borderRadius={12} flex align="center" justify="center">
+          <CreditCard size={22} />
+        </View>
+        <View>
+          <Text weight={700} size={21}>FinanceApp</Text>
+        </View>
+      </View>
 
-      <div style={{ padding: '0 1rem' }}>
-        <SidebarAccountCard />
-      </div>
-
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '1rem' }}>
+      <View flex direction="column" gap={6} padding={16}>
         {navItems.map((item) => (
           <NavLink
             key={item.path}
@@ -61,14 +46,14 @@ const Navbar: React.FC = () => {
             style={({ isActive }) => ({
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
+              gap: 12,
               padding: '12px 16px',
-              borderRadius: '8px',
+              borderRadius: 10,
               textDecoration: 'none',
-              color: isActive ? 'var(--accent-primary)' : '#474646',
-              background: isActive ? '#f0f4ff' : 'transparent',
-              fontWeight: 500,
-              fontSize: '1rem',
+              color: isActive ? '#4285F4' : '#333333',
+              background: isActive ? '#e3eaf6' : 'transparent',
+              fontWeight: isActive ? 600 : 500,
+              fontSize: 15,
               transition: 'all 0.2s'
             })}
           >
@@ -76,22 +61,22 @@ const Navbar: React.FC = () => {
             {item.label}
           </NavLink>
         ))}
-      </nav>
+      </View>
 
-      <div style={{ marginTop: 'auto', padding: '1rem', borderTop: '1px solid var(--border-color)' }}>
-        <NavLink 
+      <View style={{ marginTop: 'auto', borderTop: '1px solid #e5e7eb' }} padding={16}>
+        <NavLink
           to="/settings"
           style={({ isActive }) => ({
             display: 'flex',
             alignItems: 'center',
-            gap: '12px',
+            gap: 12,
             padding: '12px 16px',
-            borderRadius: '8px',
+            borderRadius: 10,
             textDecoration: 'none',
-            color: isActive ? 'var(--accent-primary)' : '#474646',
-            background: isActive ? '#f0f4ff' : 'transparent',
-            fontWeight: 500,
-            fontSize: '1rem',
+            color: isActive ? '#4285F4' : '#333333',
+            background: isActive ? '#e3eaf6' : 'transparent',
+            fontWeight: isActive ? 600 : 500,
+            fontSize: 15,
             transition: 'all 0.2s'
           })}
         >
@@ -99,25 +84,23 @@ const Navbar: React.FC = () => {
           <span>Settings</span>
         </NavLink>
 
-        <button 
+        <Button
+          variant="ghost"
           onClick={handleLogout}
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            width: '100%', 
-            gap: '12px', 
-            padding: '12px 16px', 
-            color: '#ac3c39',
-            fontSize: '1rem',
-            marginTop: '8px'
+          style={{
+            width: '100%',
+            justifyContent: 'flex-start',
+            color: '#b52323',
+            marginTop: 4,
+            padding: '12px 16px',
+            fontSize: 15,
+            fontWeight: 500
           }}
         >
           <LogOut size={20} />
           <span>Sign Out</span>
-        </button>
-      </div>
-    </aside>
+        </Button>
+      </View>
+    </View>
   );
-};
-
-export default Navbar;
+}

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { Card, View, Text, Button, Input } from '../ui';
 
 interface QuickActionsProps {
   state: 'idle' | 'add' | 'send';
@@ -10,7 +11,7 @@ interface QuickActionsProps {
   onValidationError: (msg: string) => void;
 }
 
-const FriendsQuickActions: React.FC<QuickActionsProps> = ({
+export default function FriendsQuickActions({
   state,
   onAddMode,
   onSendMode,
@@ -18,7 +19,7 @@ const FriendsQuickActions: React.FC<QuickActionsProps> = ({
   onAddFriend,
   onSendMoney,
   onValidationError
-}) => {
+}: QuickActionsProps) {
   const [iban, setIban] = useState('');
   const [amount, setAmount] = useState<string>('');
   const [message, setMessage] = useState('');
@@ -46,6 +47,7 @@ const FriendsQuickActions: React.FC<QuickActionsProps> = ({
       onAddFriend(n);
     } else if (state === 'send') {
       const a = parseFloat(amount);
+
       if (isNaN(a) || a <= 0) {
         onValidationError('Amount must be a positive number.');
         return;
@@ -55,79 +57,40 @@ const FriendsQuickActions: React.FC<QuickActionsProps> = ({
   };
 
   return (
-    <div className="card">
-      <h2 style={{ fontSize: '1.05rem', fontWeight: 800, margin: '0 0 12px' }}>Quick Actions</h2>
+    <Card padding={24}>
+      <Text variant="h2" size={18} style={{ marginBottom: 20 }}>Quick Actions</Text>
 
       {state === 'idle' ? (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <button className="btn-primary" style={{ padding: '10px' }} onClick={onAddMode}>
-            Add New Friend
-          </button>
-          <button className="btn-secondary" style={{ padding: '10px' }} onClick={onSendMode}>
-            Send Money
-          </button>
-        </div>
+        <View grid gridCols="1fr 1fr" gap={16}>
+          <Button variant="primary" style={{ padding: 12, borderRadius: 10 }} onClick={onAddMode}>Add New Friend</Button>
+          <Button variant="secondary" style={{ padding: 12, borderRadius: 10 }} onClick={onSendMode}>Send Money</Button>
+        </View>
       ) : (
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div style={{ display: 'grid', gap: '4px' }}>
-            <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-              {state === 'add' ? 'Friend IBAN' : 'Receiver IBAN'}
-            </label>
-            <input
-              className="form-group"
-              style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--line)' }}
-              placeholder="ROxx xxxx xxxx xxxx ..."
-              value={iban}
-              onChange={(e) => setIban(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
-            />
-          </div>
+        <View grid gap={16}>
+          <View grid gap={6}>
+            <Text variant="label">{state === 'add' ? 'Friend IBAN' : 'Receiver IBAN'}</Text>
+            <Input placeholder="ROxx xxxx xxxx xxxx ..." value={iban} onChange={(e) => setIban(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleConfirm()} />
+          </View>
 
           {state === 'send' && (
             <>
-              <div style={{ display: 'grid', gap: '4px' }}>
-                <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Amount</label>
-                <input
-                  className="form-group"
-                  style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--line)' }}
-                  type="number"
-                  placeholder="e.g. 250"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
-                />
-              </div>
-              <div style={{ display: 'grid', gap: '4px' }}>
-                <label style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Message (optional)</label>
-                <input
-                  className="form-group"
-                  style={{ padding: '10px', borderRadius: '10px', border: '1px solid var(--line)' }}
-                  placeholder="Description..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
-                />
-              </div>
+              <View grid gap={6}>
+                <Text variant="label">Amount</Text>
+                <Input type="number" placeholder="e.g. 250" value={amount} onChange={(e) => setAmount(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleConfirm()} />
+              </View>
+              <View grid gap={6}>
+                <Text variant="label">Message (optional)</Text>
+                <Input placeholder="Description..." value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleConfirm()} />
+              </View>
             </>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button className="btn-secondary" style={{ width: 'auto', padding: '8px 16px' }} onClick={onBack}>
-              Cancel
-            </button>
-            <button
-              className="btn-primary"
-              style={{ width: 'auto', padding: '8px 16px' }}
-              disabled={state === 'add' ? !iban : (!iban || !amount)}
-              onClick={handleConfirm}
-            >
-              Confirm
-            </button>
-          </div>
-        </div>
+          <View flex justify="flex-end" gap={12} style={{ marginTop: 8 }}>
+            <Button variant="secondary" style={{ padding: '10px 20px', borderRadius: 10 }} onClick={onBack}>Cancel</Button>
+            <Button variant="primary" style={{ width: 'auto', padding: '10px 24px', margin: 0, borderRadius: 10 }} disabled={state === 'add' ? !iban : (!iban || !amount)} onClick={handleConfirm}>Confirm</Button>
+          </View>
+        </View>
       )}
-    </div>
+    </Card>
   );
-};
-
-export default FriendsQuickActions;
+}

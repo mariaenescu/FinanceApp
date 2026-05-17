@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,6 +10,7 @@ import {
 } from 'chart.js';
 import type { ChartOptions } from 'chart.js';
 import { Calendar, ChevronLeft, ChevronRight, BarChart3, TrendingUp } from 'lucide-react';
+import { Card, View, Text, Button } from '../ui';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, BarController, Tooltip, Legend);
 
@@ -26,16 +27,9 @@ interface WeeklySpendingChartProps {
   onNext: () => void;
 }
 
-const WeeklySpendingChart: React.FC<WeeklySpendingChartProps> = ({
-  data,
-  range,
-  loading,
-  onPrev,
-  onNext
-}) => {
+export default function WeeklySpendingChart({ data, range, loading, onPrev, onNext }: WeeklySpendingChartProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<ChartJS | null>(null);
-
   const order = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
   const labels = order.map(d => d.slice(0, 3));
   const values = order.map(d => {
@@ -59,16 +53,11 @@ const WeeklySpendingChart: React.FC<WeeklySpendingChartProps> = ({
     const ctx = canvasRef.current.getContext('2d');
     if (!ctx) return;
 
-    // Create Gradient for Bars
-    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, '#38bdf8'); // light sky blue
-    gradient.addColorStop(1, '#1d4ed8'); // deep royal blue
-
     const options: ChartOptions<'bar'> = {
       responsive: true,
       maintainAspectRatio: false,
       animation: {
-        duration: 2000,
+        duration: 1000,
         easing: 'easeOutQuart'
       },
       plugins: {
@@ -89,13 +78,13 @@ const WeeklySpendingChart: React.FC<WeeklySpendingChartProps> = ({
       },
       scales: {
         x: {
-          ticks: { color: 'var(--text-secondary)', font: { weight: 600 } },
+          ticks: { color: '#848484', font: { weight: 600 } },
           grid: { display: false }
         },
         y: {
           beginAtZero: true,
           ticks: {
-            color: 'var(--text-secondary)',
+            color: '#848484',
             callback: (v) => money(Number(v)),
             font: { size: 10 }
           },
@@ -110,8 +99,8 @@ const WeeklySpendingChart: React.FC<WeeklySpendingChartProps> = ({
         labels,
         datasets: [{
           data: values,
-          backgroundColor: gradient,
-          borderRadius: 12,
+          backgroundColor: '#38bdf8',
+          borderRadius: 8,
           borderSkipped: false,
           hoverBackgroundColor: '#0ea5e9'
         }]
@@ -125,145 +114,57 @@ const WeeklySpendingChart: React.FC<WeeklySpendingChartProps> = ({
   }, [data]);
 
   return (
-    <div className="card" style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '24px',
-      background: 'linear-gradient(165deg, #ffffff, #f1f5f9)',
-      border: '1px solid var(--line)',
-      boxShadow: '0 10px 30px -5px rgba(0,0,0,0.05)',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      <div style={{
-        position: 'absolute',
-        top: '-50px',
-        right: '-50px',
-        width: '200px',
-        height: '200px',
-        background: 'radial-gradient(circle, rgba(56,189,248,0.05) 0%, transparent 70%)',
-        zIndex: 0
-      }} />
+    <Card flex direction="column" gap={24} padding={24} bg="#ffffff">
+      <View flex align="center" justify="space-between">
+        <View flex align="center" gap={14}>
+          <View style={{ background: '#bbd1ed', color: '#4285F4', width: 42, height: 42 }} borderRadius={12} flex align="center" justify="center">
+            <BarChart3 size={22} />
+          </View>
+          <View>
+            <Text variant="h2" size={19}>Weekly Spending</Text>
+            <Text size={14} color="#848484" style={{ marginTop: 2 }}>Daily breakdown from your activity</Text>
+          </View>
+        </View>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{
-            background: 'var(--accent-primary)',
-            color: 'white',
-            width: '44px',
-            height: '44px',
-            borderRadius: '14px',
-            display: 'grid',
-            placeItems: 'center',
-            boxShadow: '0 4px 12px rgba(14, 165, 233, 0.2)'
-          }}>
-            <BarChart3 size={24} />
-          </div>
-          <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, letterSpacing: '-0.01em' }}>Weekly Spending</h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>Daily breakdown from your activity</p>
-          </div>
-        </div>
-
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          background: 'rgba(255,255,255,0.8)',
-          padding: '6px 10px',
-          borderRadius: '12px',
-          border: '1px solid var(--line)',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-          backdropFilter: 'blur(8px)'
-        }}>
-          <button
-            onClick={onPrev}
-            disabled={loading}
-            style={{
-              padding: '6px',
-              borderRadius: '8px',
-              display: 'grid',
-              placeItems: 'center',
-              opacity: loading ? 0.5 : 1,
-              background: '#f8fafc',
-              border: '1px solid var(--line)',
-              cursor: 'pointer'
-            }}
-            className="hover-scale"
-          >
+        <View flex align="center" gap={12} style={{ background: '#e3eaf6', padding: '6px 12px', border: '1px solid #e5e7eb' }} borderRadius={10}>
+          <Button variant="icon" onClick={onPrev} disabled={loading} style={{ padding: 6, borderRadius: 8, background: '#ffffff', border: '1px solid #e5e7eb' }}>
             <ChevronLeft size={16} />
-          </button>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)' }}>
-            <Calendar size={14} className="text-accent" />
+          </Button>
+          <Text size={14} weight={600} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Calendar size={16} style={{ color: '#4285F4' }} />
             {range}
-          </div>
-          <button
-            onClick={onNext}
-            disabled={loading}
-            style={{
-              padding: '6px',
-              borderRadius: '8px',
-              display: 'grid',
-              placeItems: 'center',
-              opacity: loading ? 0.5 : 1,
-              background: '#f8fafc',
-              border: '1px solid var(--line)',
-              cursor: 'pointer'
-            }}
-            className="hover-scale"
-          >
+          </Text>
+          <Button variant="icon" onClick={onNext} disabled={loading} style={{ padding: 6, borderRadius: 8, background: '#ffffff', border: '1px solid #e5e7eb' }}>
             <ChevronRight size={16} />
-          </button>
-        </div>
-      </div>
+          </Button>
+        </View>
+      </View>
 
-      <div style={{ position: 'relative', height: '320px', width: '100%', zIndex: 1 }}>
+      <View style={{ position: 'relative', height: 320, width: '100%' }}>
         <canvas ref={canvasRef} />
-      </div>
+      </View>
 
-      <div style={{ display: 'flex', gap: '16px', zIndex: 1 }}>
-        <div style={{
-          flex: 1,
-          background: 'white',
-          border: '1px solid var(--line)',
-          padding: '16px',
-          borderRadius: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)'
-        }}>
-          <div style={{ background: '#f0f9ff', color: '#0369a1', padding: '8px', borderRadius: '10px' }}>
-            <Calendar size={20} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Weekly Total</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0369a1' }}>{money(total)}</div>
-          </div>
-        </div>
+      <View flex gap={16}>
+        <View style={{ flex: 1 }} bg="#ffffff" border="1px solid #e5e7eb" padding={16} borderRadius={12} flex align="center" gap={14}>
+          <View style={{ background: 'rgba(3, 105, 161, 0.1)', color: '#0369a1' }} padding={10} borderRadius={10}>
+            <Calendar size={22} />
+          </View>
+          <View>
+            <Text size={13} color="#848484" weight={600}>Weekly Total</Text>
+            <Text size={21} weight={700} style={{ color: '#0369a1', marginTop: 2 }}>{money(total)}</Text>
+          </View>
+        </View>
 
-        <div style={{
-          flex: 1,
-          background: 'white',
-          border: '1px solid var(--line)',
-          padding: '16px',
-          borderRadius: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)'
-        }}>
-          <div style={{ background: '#f5f3ff', color: '#5b21b6', padding: '8px', borderRadius: '10px' }}>
-            <TrendingUp size={20} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Avg / Day</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#5b21b6' }}>{money(avg)}</div>
-          </div>
-        </div>
-      </div>
-    </div>
+        <View style={{ flex: 1 }} bg="#ffffff" border="1px solid #e5e7eb" padding={16} borderRadius={12} flex align="center" gap={14}>
+          <View style={{ background: 'rgba(91, 33, 182, 0.1)', color: '#5b21b6' }} padding={10} borderRadius={10}>
+            <TrendingUp size={22} />
+          </View>
+          <View>
+            <Text size={13} color="#848484" weight={600}>Avg / Day</Text>
+            <Text size={21} weight={700} style={{ color: '#5b21b6', marginTop: 2 }}>{money(avg)}</Text>
+          </View>
+        </View>
+      </View>
+    </Card>
   );
-};
-
-export default WeeklySpendingChart;
+}

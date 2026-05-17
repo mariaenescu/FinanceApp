@@ -1,19 +1,11 @@
-# Dependencies
 node_modules/
-.pnpm-store/
-
-# Build and production
 dist/
 dist-ssr/
-*.local
-
-# Environment files
+.vite/
+*.tsbuildinfo
+*.log
+.DS_Store
 .env
 .env.*
-!.env.example
-
-# Testing
-coverage/
-
-# Vite/Vite-related
-.vite/
+.idea/
+.vscode/

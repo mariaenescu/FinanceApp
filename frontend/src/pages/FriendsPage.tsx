@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Layout from '../components/Layout';
 import { friendService, financeService, alertService } from '../api/services';
 import type { FriendResponseDTO } from '../types';
@@ -7,23 +7,23 @@ import RecentFriendActivity from '../components/friends/RecentFriendActivity';
 import PaginatedFriendsList from '../components/friends/PaginatedFriendsList';
 import { Search, X } from 'lucide-react';
 import FeedbackModal from '../components/FeedbackModal';
+import { View, Text, Button, Input } from '../components/ui';
 
 type QuickState = 'idle' | 'add' | 'send';
 
-const FriendsPage: React.FC = () => {
+export default function FriendsPage() {
   const [friends, setFriends] = useState<FriendResponseDTO[]>([]);
   const [recent, setRecent] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [quickState, setQuickState] = useState<QuickState>('idle');
   const [query, setQuery] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
-
   const [notice, setNotice] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
 
-  const showNotice = (msg: string, type: 'success' | 'error' = 'success') => {
+  function showNotice(msg: string, type: 'success' | 'error' = 'success') {
     setNotice({ msg, type });
     setTimeout(() => setNotice(null), 5000);
-  };
+  }
 
   const loadFriends = useCallback(async (searchText?: string) => {
     try {
@@ -69,7 +69,7 @@ const FriendsPage: React.FC = () => {
     return () => clearInterval(interval);
   }, [fetchData, query, loadFriends, loadRecent]);
 
-  const handleAddFriend = async (iban: string) => {
+  async function handleAddFriend(iban: string) {
     try {
       await friendService.addFriend(iban);
       showNotice('Friend added successfully!');
@@ -77,9 +77,9 @@ const FriendsPage: React.FC = () => {
     } catch (err) {
       showNotice('Could not add friend. Check IBAN or if already added.', 'error');
     }
-  };
+  }
 
-  const handleSendMoney = async (iban: string, amount: number, message?: string) => {
+  async function handleSendMoney(iban: string, amount: number, message?: string) {
     try {
       await financeService.createExpense({
         ibanReceiver: iban,
@@ -91,7 +91,6 @@ const FriendsPage: React.FC = () => {
       loadFriends(query);
       setShowFeedback(true);
 
-      // Check for low balance alert
       const lbData = await alertService.checkLowBalance();
       if (lbData.shouldAlert) {
         window.alert(lbData.message || 'Low balance alert!');
@@ -99,109 +98,114 @@ const FriendsPage: React.FC = () => {
     } catch (err: any) {
       showNotice(err.message || 'Transfer failed.', 'error');
     }
-  };
+  }
 
   return (
     <Layout>
-      <div className="fade-in" style={{ padding: '8px 0' }}>
-        <header style={{ marginBottom: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '6px', letterSpacing: '-0.02em' }}>Friends & Contacts</h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Manage your community and send money instantly</p>
-          </div>
+      <View className="fade-in" padding="8px 0">
+        <View flex direction="column" gap={24} style={{ marginBottom: 32 }}>
+          <View>
+            <Text variant="h1" style={{ marginBottom: 6 }}>Friends & Contacts</Text>
+            <Text color="#848484" size={18}>Manage your community and send money instantly</Text>
+          </View>
 
-          {/* Grand Search Bar */}
-          <div style={{ position: 'relative', maxWidth: '800px', width: '100%' }}>
-            <div style={{
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              background: 'white',
-              borderRadius: '20px',
-              padding: '4px',
-              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
-              border: '1px solid var(--line)',
-              transition: 'all 0.3s ease'
-            }} className="search-grand-container">
-              <Search size={24} style={{ position: 'absolute', left: '20px', color: 'var(--accent-primary)', opacity: 0.7 }} />
-              <input
+          <View style={{ position: 'relative', maxWidth: 800, width: '100%' }}>
+            <View
+              className="search-grand-container"
+              flex
+              align="center"
+              bg="white"
+              borderRadius={20}
+              padding={4}
+              border="1px solid #e5e7eb"
+              style={{ boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)' }}
+            >
+              <Search size={24} style={{ position: 'absolute', left: 20, color: '#4285F4', opacity: 0.7 }} />
+              <Input
                 type="text"
                 style={{
                   padding: '16px 20px 16px 60px',
                   width: '100%',
                   border: 'none',
-                  borderRadius: '16px',
-                  fontSize: '1.2rem',
+                  borderRadius: 16,
+                  fontSize: 19,
                   outline: 'none',
-                  color: 'var(--text-primary)'
+                  color: '#333333'
                 }}
                 placeholder="Search by name, email or IBAN..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
               {query && (
-                <button
-                  onClick={() => setQuery('')}
-                  style={{ position: 'absolute', right: '16px', color: 'var(--text-secondary)', padding: '4px' }}
-                >
+                <Button variant="icon" onClick={() => setQuery('')} style={{ position: 'absolute', right: 16, color: '#848484' }}>
                   <X size={20} />
-                </button>
+                </Button>
               )}
-            </div>
-          </div>
-        </header>
+            </View>
+          </View>
+        </View>
 
         {notice && (
-          <div style={{
-            padding: '14px 20px',
-            borderRadius: '16px',
-            marginBottom: '28px',
-            backgroundColor: notice.type === 'success' ? '#f0fdf4' : '#fef2f2',
-            color: notice.type === 'success' ? '#16a34a' : '#dc2626',
-            border: `1px solid ${notice.type === 'success' ? '#dcfce7' : '#fee2e2'}`,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
-          }}>
-            <span style={{ fontWeight: 500 }}>{notice.msg}</span>
-            <button onClick={() => setNotice(null)} style={{ opacity: 0.6 }}><X size={18} /></button>
-          </div>
+          <View
+            flex
+            justify="space-between"
+            align="center"
+            style={{
+              padding: '14px 20px',
+              borderRadius: 16,
+              marginBottom: 28,
+              backgroundColor: notice.type === 'success' ? '#f0fdf4' : '#fef2f2',
+              color: notice.type === 'success' ? '#16a34a' : '#dc2626',
+              border: `1px solid ${notice.type === 'success' ? '#dcfce7' : '#fee2e2'}`,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+            }}
+          >
+            <Text weight={500}>{notice.msg}</Text>
+            <Button variant="icon" onClick={() => setNotice(null)} style={{ opacity: 0.6 }}>
+              <X size={18} />
+            </Button>
+          </View>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '0.92fr 1.08fr', gap: '28px', alignItems: 'stretch' }}>
-          {/* Left Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <View grid gridCols="0.92fr 1.08fr" gap={28} style={{ alignItems: 'stretch' }}>
+          <View flex direction="column" gap={24}>
             <FriendsQuickActions
               state={quickState}
               onAddMode={() => setQuickState('add')}
               onSendMode={() => setQuickState('send')}
               onBack={() => setQuickState('idle')}
-              onAddFriend={(iban) => { handleAddFriend(iban); setQuickState('idle'); }}
-              onSendMoney={(iban, amt, msg) => { handleSendMoney(iban, amt, msg); setQuickState('idle'); }}
+              onAddFriend={(iban) => {
+                handleAddFriend(iban);
+                setQuickState('idle');
+              }}
+              onSendMoney={(iban, amt, msg) => {
+                handleSendMoney(iban, amt, msg);
+                setQuickState('idle');
+              }}
               onValidationError={(msg) => showNotice(msg, 'error')}
             />
-
-            <div style={{ flex: 1 }}>
+            <View style={{ flex: 1 }}>
               <RecentFriendActivity items={recent} />
-            </div>
-          </div>
+            </View>
+          </View>
 
-          <div style={{ height: '100%' }}>
+          <View style={{ height: '100%' }}>
             <PaginatedFriendsList
               friends={friends}
               onSendMoney={(p) => handleSendMoney(p.iban, p.amount, p.message)}
               onValidationError={(msg) => showNotice(msg, 'error')}
             />
-          </div>
-        </div>
+          </View>
+        </View>
 
-        {loading && <div style={{ marginTop: '12px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Refreshing data...</div>}
+        {loading && (
+          <View style={{ marginTop: 12 }}>
+            <Text color="#848484" size={15}>Refreshing data...</Text>
+          </View>
+        )}
 
         {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
-      </div>
+      </View>
     </Layout>
   );
-};
-
-export default FriendsPage;
+}

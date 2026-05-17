@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Card, View, Text, List, ListItem } from '../ui';
 
 type TxType = 'INCOME' | 'EXPENSE';
 interface RecentItem {
@@ -14,10 +15,10 @@ interface RecentFriendActivityProps {
   items: RecentItem[];
 }
 
-const RecentFriendActivity: React.FC<RecentFriendActivityProps> = ({ items }) => {
+export default function RecentFriendActivity({ items }: RecentFriendActivityProps) {
   const [revealed, setRevealed] = useState<Set<string>>(new Set());
 
-  const formatRON = (n: number) => 
+  const formatRON = (n: number) =>
     n.toLocaleString('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const toggleReveal = (id: string) => {
@@ -28,65 +29,54 @@ const RecentFriendActivity: React.FC<RecentFriendActivityProps> = ({ items }) =>
   };
 
   return (
-    <div className="card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <h2 style={{ fontSize: '1.05rem', fontWeight: 800, margin: '0 0 12px' }}>Recent Activity</h2>
+    <Card flex direction="column" style={{ height: '100%' }} padding={24}>
+      <Text variant="h2" size={18} style={{ marginBottom: 20 }}>Recent Activity</Text>
 
       {items.length === 0 ? (
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          No recent activity
-        </div>
+        <View flex align="center" justify="center" style={{ flex: 1 }}>
+          <Text color="#848484" size={15}>No recent activity</Text>
+        </View>
       ) : (
-        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '10px' }}>
+        <List gap={12}>
           {items.map((item) => (
-            <li 
-              key={item.id} 
+            <ListItem
+              key={item.id}
               onClick={() => toggleReveal(item.id)}
-              style={{ 
-                background: 'white', 
-                border: '1px solid var(--line)', 
-                borderRadius: '16px', 
-                padding: '16px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: revealed.has(item.id) ? '0 4px 12px rgba(0,0,0,0.05)' : 'none'
-              }}
+              bg="#ffffff"
+              border="1px solid #e5e7eb"
+              borderRadius={12}
+              padding={16}
+              style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
               title={revealed.has(item.id) ? 'Click to hide IBAN' : 'Click to reveal IBAN'}
             >
               {!revealed.has(item.id) ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'stretch', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'grid', gap: '4px' }}>
-                    <div style={{ fontWeight: 600 }}>{item.title}</div>
-                    <div style={{ color: '#97a3b6', fontSize: '.85rem' }}>{item.subtitle}</div>
-                  </div>
-                  <div style={{ 
-                    fontWeight: 800, 
-                    color: item.type === 'INCOME' ? '#22c55e' : '#ef4444' 
-                  }}>
+                <View flex align="center" justify="space-between">
+                  <View grid gap={2}>
+                    <Text weight={600} size={15}>{item.title}</Text>
+                    <Text color="#848484" size={14}>{item.subtitle}</Text>
+                  </View>
+                  <Text weight={700} size={16} color={item.type === 'INCOME' ? '#10b981' : '#b52323'}>
                     {item.type === 'INCOME' ? '+' : '-'}{formatRON(item.amount)} RON
-                  </div>
-                </div>
+                  </Text>
+                </View>
               ) : (
-                <div style={{ display: 'grid', gap: '6px' }}>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Friend IBAN</div>
-                  <code style={{ 
-                    background: 'white', 
-                    border: '1px dashed var(--line)', 
-                    padding: '8px 10px', 
-                    borderRadius: '8px',
-                    fontFamily: 'monospace',
-                    fontSize: '0.9rem',
+                <View grid gap={6}>
+                  <Text color="#848484" size={14} weight={600}>Friend IBAN</Text>
+                  <Text variant="code" style={{
+                    background: '#f0f2f5',
+                    padding: '10px 14px',
+                    borderRadius: 8,
+                    color: '#333333',
                     display: 'block'
                   }}>
                     {item.iban || '—'}
-                  </code>
-                </div>
+                  </Text>
+                </View>
               )}
-            </li>
+            </ListItem>
           ))}
-        </ul>
+        </List>
       )}
-    </div>
+    </Card>
   );
 };
-
-export default RecentFriendActivity;

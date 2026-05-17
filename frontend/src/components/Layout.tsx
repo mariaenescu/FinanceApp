@@ -1,21 +1,20 @@
 import React from 'react';
 import Navbar from './Navbar';
+import { View } from './ui';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="app-shell">
+    <View className="app-shell">
       <Navbar />
-      <main className="content">
-        <div className="inner">
+      <View className="content">
+        <View className="inner">
           {children}
-        </div>
-      </main>
-    </div>
+        </View>
+      </View>
+    </View>
   );
-};
-
-export default Layout;
+}
