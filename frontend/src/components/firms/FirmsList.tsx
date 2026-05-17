@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, ChevronLeft, ChevronRight, X } from 'lucide-react';
-
 import type { Category } from '../../types';
+import { Card, View, Text, Button, Input } from '../ui';
 
 interface Firm {
   fullName: string;
@@ -25,11 +25,34 @@ const colorByCategory: Record<Category, string> = {
   USER: '#a9b0bb',
 };
 
-const FirmsList: React.FC<FirmsListProps> = ({ firms, onPay, onError }) => {
+interface FirmItemCardProps {
+  firm: Firm;
+  isOpen: boolean;
+  onToggle: () => void;
+  amount: string;
+  setAmount: (val: string) => void;
+  message: string;
+  setMessage: (val: string) => void;
+  pin: string;
+  setPin: (val: string) => void;
+  onPay: (firm: Firm) => void;
+}
+
+interface PaginationProps {
+  page: number;
+  totalPages: number;
+  onPrev: () => void;
+  onNext: () => void;
+}
+
+function getInitials(name: string) {
+  return name.split(' ').filter(Boolean).map(w => w[0]?.toUpperCase()).join('');
+}
+
+export default function FirmsList({ firms, onPay, onError }: FirmsListProps) {
   const [page, setPage] = useState(1);
   const pageSize = 6;
   const totalPages = Math.max(1, Math.ceil(firms.length / pageSize));
-
   const [sendFor, setSendFor] = useState<string | null>(null);
   const [amount, setAmount] = useState<string>('');
   const [message, setMessage] = useState('');
@@ -73,145 +96,103 @@ const FirmsList: React.FC<FirmsListProps> = ({ firms, onPay, onError }) => {
     setSendFor(null);
   };
 
-  const getInitials = (name: string) =>
-    name.split(' ').filter(Boolean).map(w => w[0]?.toUpperCase()).join('');
+  return (
+    <Card flex direction="column" style={{ height: '100%' }} padding={24}>
+      <View flex align="center" justify="space-between" style={{ marginBottom: 20 }}>
+        <Text variant="h2" size={18}>Firms ({firms.length})</Text>
+      </View>
+
+      <View grid gap={12} style={{ flex: 1 }}>
+        {pageItems.map((f) => (
+          <FirmItemCard
+            key={f.iban}
+            firm={f}
+            isOpen={sendFor === f.iban}
+            onToggle={() => toggleSend(f.iban)}
+            amount={amount}
+            setAmount={setAmount}
+            message={message}
+            setMessage={setMessage}
+            pin={pin}
+            setPin={setPin}
+            onPay={attemptSend}
+          />
+        ))}
+
+        {firms.length === 0 && (
+          <View style={{ textAlign: 'center', padding: '40px 0' }}>
+            <Text color="#848484">No firms available</Text>
+          </View>
+        )}
+      </View>
+
+      <PaginationControls page={page} totalPages={totalPages} onPrev={() => setPage(p => p - 1)} onNext={() => setPage(p => p + 1)} />
+    </Card>
+  );
+}
+
+function FirmItemCard({
+  firm,
+  isOpen,
+  onToggle,
+  amount,
+  setAmount,
+  message,
+  setMessage,
+  pin,
+  setPin,
+  onPay
+}: FirmItemCardProps) {
+  const needsPin = parseFloat(amount) > 100;
 
   return (
-    <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h2 style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0 }}>Firms ({firms.length})</h2>
-      </div>
+    <View bg="#ffffff" border="1px solid #e5e7eb" borderRadius={12} padding={16} grid gridCols="1fr auto" gap={12} align="center">
+      <View flex align="center" gap={14}>
+        <View style={{ width: 42, height: 42, fontWeight: 700, color: '#fff', background: colorByCategory[firm.category] || '#a9b0bb' }} borderRadius={12} flex align="center" justify="center">
+          {getInitials(firm.fullName)}
+        </View>
+        <View grid gap={2}>
+          <Text weight={600} size={15}>{firm.fullName}</Text>
+          <Text color="#848484" size={14}>{firm.email}</Text>
+        </View>
+      </View>
 
-      <div style={{ display: 'grid', gap: '12px', flex: 1 }}>
-        {pageItems.map((f) => (
-          <div key={f.iban} style={{
-            background: '#f8fafc',
-            border: '1px solid var(--line)',
-            borderRadius: '14px',
-            padding: '12px',
-            display: 'grid',
-            gridTemplateColumns: '1fr auto',
-            gap: '10px',
-            position: 'relative',
-            transition: '120ms ease'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '9999px',
-                display: 'grid',
-                placeItems: 'center',
-                fontWeight: 800,
-                color: '#fff',
-                background: colorByCategory[f.category] || '#a9b0bb'
-              }}>
-                {getInitials(f.fullName)}
-              </div>
-              <div style={{ display: 'grid', gap: '4px' }}>
-                <div style={{ fontWeight: 700 }}>{f.fullName}</div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{f.email}</div>
-              </div>
-            </div>
+      <View flex align="center" gap={12}>
+        <Text variant="caption" style={{ border: `1px solid ${colorByCategory[firm.category]}`, color: colorByCategory[firm.category], fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 8 }}>
+          {firm.category}
+        </Text>
+        <Button variant="icon" onClick={onToggle} style={{ width: 38, height: 38, background: isOpen ? '#4285F4' : '#e3eaf6', color: isOpen ? 'white' : '#4285F4', transition: 'all 0.2s' }}>
+          {isOpen ? <X size={18} /> : <Send size={18} />}
+        </Button>
+      </View>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{
-                border: `1px solid ${colorByCategory[f.category]}`,
-                color: colorByCategory[f.category],
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                padding: '2px 8px',
-                borderRadius: '12px'
-              }}>
-                {f.category}
-              </span>
-              <button 
-                onClick={() => toggleSend(f.iban)}
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
-                  display: 'grid',
-                  placeItems: 'center',
-                  background: sendFor === f.iban ? 'var(--accent-primary)' : 'transparent',
-                  color: sendFor === f.iban ? 'white' : 'var(--text-secondary)',
-                  border: '1px solid var(--line)'
-                }}
-              >
-                {sendFor === f.iban ? <X size={18} /> : <Send size={18} />}
-              </button>
-            </div>
-
-            {sendFor === f.iban && (
-              <div style={{
-                gridColumn: '1 / -1',
-                display: 'flex',
-                gap: '10px',
-                alignItems: 'center',
-                marginTop: '8px',
-                padding: '10px',
-                border: '1px dashed var(--line)',
-                borderRadius: '10px',
-                backgroundColor: 'white'
-              }}>
-                <input
-                  type="number"
-                  placeholder="Amount"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  style={{ width: '100px', padding: '8px', borderRadius: '6px', border: '1px solid var(--line)' }}
-                />
-                <input
-                  type="text"
-                  placeholder="Message (opt)"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid var(--line)' }}
-                />
-                {parseFloat(amount) > 100 && (
-                  <input
-                    type="password"
-                    placeholder="PIN"
-                    maxLength={4}
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value)}
-                    style={{ width: '70px', padding: '8px', borderRadius: '6px', border: '1px solid var(--line)' }}
-                  />
-                )}
-                <button 
-                  className="btn-primary"
-                  style={{ width: 'auto', padding: '8px 16px', borderRadius: '6px' }}
-                  onClick={() => attemptSend(f)}
-                >
-                  Pay
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px', marginTop: '16px' }}>
-        <button 
-          disabled={page === 1}
-          onClick={() => setPage(p => p - 1)}
-          style={{ padding: '4px', borderRadius: '6px', opacity: page === 1 ? 0.3 : 1 }}
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-          {page} / {totalPages}
-        </span>
-        <button 
-          disabled={page === totalPages}
-          onClick={() => setPage(p => p + 1)}
-          style={{ padding: '4px', borderRadius: '6px', opacity: page === totalPages ? 0.3 : 1 }}
-        >
-          <ChevronRight size={20} />
-        </button>
-      </div>
-    </div>
+      {isOpen && (
+        <View style={{ gridColumn: '1 / -1', marginTop: 12, backgroundColor: '#f0f2f5' }} flex gap={12} align="center" padding={16} border="1px solid #e5e7eb" borderRadius={10}>
+          <Input type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} style={{ width: 110, padding: 10, borderRadius: 8, fontSize: 14 }} />
+          <Input type="text" placeholder="Message (optional)" value={message} onChange={(e) => setMessage(e.target.value)} style={{ flex: 1, padding: 10, borderRadius: 8, fontSize: 14 }} />
+          {needsPin && (
+            <Input type="password" placeholder="PIN" maxLength={4} value={pin} onChange={(e) => setPin(e.target.value)} style={{ width: 80, padding: 10, borderRadius: 8, fontSize: 14 }} />
+          )}
+          <Button variant="primary" style={{ width: 'auto', padding: '10px 20px', margin: 0, borderRadius: 8 }} onClick={() => onPay(firm)}>Pay</Button>
+        </View>
+      )}
+    </View>
   );
-};
+}
 
-export default FirmsList;
+function PaginationControls({ page, totalPages, onPrev, onNext }: PaginationProps) {
+  if (totalPages <= 1) return null;
+  return (
+    <View flex align="center" justify="flex-end" gap={12} style={{ marginTop: 20 }}>
+      <Button variant="icon" disabled={page === 1} onClick={onPrev} style={{ padding: '6px 12px', background: '#e3eaf6', color: '#4285F4', opacity: page === 1 ? 0.5 : 1 }}>
+        <ChevronLeft size={18} />
+      </Button>
+
+      <Text size={14} color="#848484" weight={600}>{page} / {totalPages}</Text>
+
+      <Button variant="icon" disabled={page === totalPages} onClick={onNext} style={{ padding: '6px 12px', background: '#e3eaf6', color: '#4285F4', opacity: page === totalPages ? 0.5 : 1 }}>
+        <ChevronRight size={18} />
+      </Button>
+    </View>
+  );
+}

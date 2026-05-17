@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../api/services';
-import { Shield, Zap, BarChart3, CreditCard } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
+import { View, Text, Button, Input } from '../components/ui';
 
-const SignUpPage: React.FC = () => {
+export default function SignUpPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,24 +34,22 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="signup-container">
-      <div className="signup-card">
-        <div className="header" style={{ textAlign: 'center' }}>
-          <div className="finance-icon-box">
+    <View className="signup-container">
+      <View className="signup-card">
+        <View className="header" style={{ textAlign: 'center' }}>
+          <View className="finance-icon-box">
             <CreditCard size={40} />
-          </div>
-          <h1>FinanceApp</h1>
-          <p className="subtitle">Take control of your finances</p>
-        </div>
+          </View>
+          <Text variant="h1">FinanceApp</Text>
+        </View>
 
-        <div className="auth-form-card">
-          <h4>Welcome</h4>
-          <h5 className="form-subtitle">Sign in to your account or create a new one</h5>
+        <View className="auth-form-card">
+          <Text variant="h4">Welcome</Text>
 
           <form onSubmit={handleSignUp}>
-            <div className="form-group">
-              <label htmlFor="fullName">Full Name</label>
-              <input
+            <View className="form-group">
+              <Text variant="label">Full Name</Text>
+              <Input
                 id="fullName"
                 type="text"
                 placeholder="e.g. Jane Doe"
@@ -58,11 +57,11 @@ const SignUpPage: React.FC = () => {
                 onChange={(e) => setFullName(e.target.value)}
                 required
               />
-            </div>
+            </View>
 
-            <div className="form-group">
-              <label htmlFor="email">Email Address</label>
-              <input
+            <View className="form-group">
+              <Text variant="label">Email Address</Text>
+              <Input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
@@ -70,11 +69,11 @@ const SignUpPage: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-            </div>
+            </View>
 
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
+            <View className="form-group">
+              <Text variant="label">Password</Text>
+              <Input
                 id="password"
                 type="password"
                 placeholder="Minimum 8 characters"
@@ -82,11 +81,11 @@ const SignUpPage: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-            </div>
+            </View>
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
+            <View className="form-group">
+              <Text variant="label">Confirm Password</Text>
+              <Input
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
@@ -94,56 +93,22 @@ const SignUpPage: React.FC = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
-            </div>
+            </View>
 
-            <button type="submit" className="login-button" disabled={isLoading}>
+            <Button variant="primary" type="submit" style={{ width: '100%', justifyContent: 'center' }} disabled={isLoading}>
               {isLoading ? 'Creating Account...' : 'Create Account'}
-            </button>
+            </Button>
 
-            {errorMessage && <div className="error-message">{errorMessage}</div>}
+            {errorMessage && <View className="error-message"><Text color="#b52323">{errorMessage}</Text></View>}
           </form>
 
-          <div className="form-footer">
-            <p>
+          <View className="form-footer">
+            <Text>
               Already have an account? <Link to="/login">Sign In</Link>
-            </p>
-          </div>
-        </div>
-
-        <div className="features-list">
-          <div className="feature-item">
-            <div className="icon-wrapper">
-              <Shield size={20} />
-            </div>
-            <div className="feature-text">
-              <h5>Bank-level Security</h5>
-              <h6>Your data is protected with 256-bit encryption</h6>
-            </div>
-          </div>
-
-          <div className="feature-item">
-            <div className="icon-wrapper">
-              <Zap size={20} />
-            </div>
-            <div className="feature-text">
-              <h5>Instant Transfers</h5>
-              <h6>Send and receive money in real-time</h6>
-            </div>
-          </div>
-
-          <div className="feature-item">
-            <div className="icon-wrapper">
-              <BarChart3 size={20} />
-            </div>
-            <div className="feature-text">
-              <h5>Smart Analytics</h5>
-              <h6>Track your spending with detailed insights</h6>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
   );
-};
-
-export default SignUpPage;
+}

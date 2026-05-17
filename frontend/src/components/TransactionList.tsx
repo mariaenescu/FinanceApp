@@ -1,8 +1,6 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
-
-type TxType = 'INCOME' | 'EXPENSE';
+import { Card, View, Text, Button, List, ListItem } from './ui';
 
 interface TransactionItemProps {
   id: string;
@@ -10,96 +8,80 @@ interface TransactionItemProps {
   description: string;
   date: string;
   amount: number;
-  type: TxType;
+  type: 'INCOME' | 'EXPENSE';
   currency?: string;
 }
-
-const TransactionItem: React.FC<TransactionItemProps> = ({
-  fromOrTo,
-  description,
-  date,
-  amount,
-  type,
-  currency = 'RON'
-}) => {
-  const formatCurrency = (n: number) => {
-    return `${Math.abs(n).toLocaleString('ro-RO', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })} ${currency}`;
-  };
-
-  return (
-    <li style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{
-          width: '36px',
-          height: '36px',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: type === 'INCOME' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-          color: type === 'INCOME' ? '#22c55e' : '#ef4444'
-        }}>
-          {type === 'INCOME' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
-        </div>
-        <div style={{ display: 'grid', gap: '2px' }}>
-          <div style={{ fontWeight: 600 }}>{fromOrTo}</div>
-          <div style={{ fontSize: '0.85rem', color: '#97a3b6' }}>{description}</div>
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{date}</div>
-        </div>
-      </div>
-      <div style={{ fontWeight: 800, color: type === 'INCOME' ? '#22c55e' : '#ef4444' }}>
-        {type === 'INCOME' ? '+' : '-'}{formatCurrency(amount)}
-      </div>
-    </li>
-  );
-};
 
 interface TransactionListProps {
   items: TransactionItemProps[];
   count?: number;
 }
 
-const TransactionList: React.FC<TransactionListProps> = ({ items, count }) => {
+export default function TransactionList({ items, count }: TransactionListProps) {
   const navigate = useNavigate();
   const limitedItems = count ? items.slice(0, count) : items;
 
   return (
-    <div className="card" style={{ padding: '10px' }}>
-      <div style={{
-        padding: '14px 18px',
-        borderBottom: '1px solid var(--border-color)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <div style={{ fontWeight: 800 }}>Recent Transactions ({limitedItems.length})</div>
-        <button 
+    <Card padding={24}>
+      <View style={{ paddingBottom: 16, borderBottom: '1px solid #e5e7eb', marginBottom: 16 }} flex justify="space-between" align="center">
+        <Text weight={700} size={18}>Recent Transactions ({limitedItems.length})</Text>
+        <Button
+          variant="secondary"
           onClick={() => navigate('/transaction-history')}
-          style={{
-            background: 'transparent',
-            fontWeight: 600,
-            letterSpacing: '.2px',
-            borderRadius: '16px',
-            padding: '8px 12px',
-            color: 'var(--accent-primary)',
-            transition: 'background-color 0.2s ease'
-          }}
-          onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(121, 134, 203, 0.1)'}
-          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          style={{ padding: '8px 16px', fontSize: 14, color: '#4285F4', border: 'none' }}
         >
           View All
-        </button>
-      </div>
-      <ul style={{ listStyle: 'none', margin: 0, padding: '12px', display: 'grid', gap: '10px' }}>
+        </Button>
+      </View>
+      <List gap={12}>
         {limitedItems.map((item) => (
           <TransactionItem key={item.id} {...item} />
         ))}
-      </ul>
-    </div>
+        {limitedItems.length === 0 && (
+          <ListItem style={{ textAlign: 'center', padding: '32px 0' }}>
+            <Text size={14} color="#848484">No recent transactions</Text>
+          </ListItem>
+        )}
+      </List>
+    </Card>
   );
-};
+}
 
-export default TransactionList;
+function TransactionItem({
+  fromOrTo,
+  description,
+  date,
+  amount,
+  type,
+  currency = 'RON'
+}: TransactionItemProps) {
+  function formatCurrency(n: number) {
+    return `${Math.abs(n).toLocaleString('ro-RO', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })} ${currency}`;
+  }
+
+  return (
+    <ListItem padding="12px 16px" flex align="center" justify="space-between" bg="#ffffff" borderRadius={12} border="1px solid #e5e7eb">
+      <View flex align="center" gap={14}>
+        <View style={{
+          width: 40,
+          height: 40,
+          background: type === 'INCOME' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(181, 35, 35, 0.1)',
+          color: type === 'INCOME' ? '#10b981' : '#b52323'
+        }} borderRadius={12} flex align="center" justify="center">
+          {type === 'INCOME' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
+        </View>
+        <View grid gap={2}>
+          <Text weight={600} size={15}>{fromOrTo}</Text>
+          <Text size={14} color="#848484">{description}</Text>
+          <Text size={12} color="#afacac">{date}</Text>
+        </View>
+      </View>
+      <Text weight={700} size={16} color={type === 'INCOME' ? '#10b981' : '#b52323'}>
+        {type === 'INCOME' ? '+' : '-'}{formatCurrency(amount)}
+      </Text>
+    </ListItem>
+  );
+}

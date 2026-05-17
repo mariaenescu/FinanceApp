@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { financeService } from '../api/services';
 import type { TransactionDTO } from '../types';
@@ -7,11 +7,11 @@ import {
   Search,
   ArrowUpRight,
   ArrowDownLeft,
-  Download,
   Calendar
 } from 'lucide-react';
+import { Card, View, Text, Button, Input, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui';
 
-const TransactionHistoryPage: React.FC = () => {
+export default function TransactionHistoryPage() {
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'ALL' | 'INCOME' | 'EXPENSE'>('ALL');
@@ -38,130 +38,118 @@ const TransactionHistoryPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="fade-in">
-        <header style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <div>
-            <h1 style={{ marginBottom: '8px' }}>History</h1>
-            <p style={{ color: 'var(--text-secondary)' }}>Track every transaction across your accounts</p>
-          </div>
-          <button className="card" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', fontWeight: 600 }}>
-            <Download size={18} />
-            Export CSV
-          </button>
+      <View className="fade-in">
+        <header style={{ marginBottom: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <View>
+            <Text variant="h1" style={{ marginBottom: 8 }}>History</Text>
+            <Text color="#848484">Track every transaction across your accounts</Text>
+          </View>
         </header>
 
-        <div className="card" style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
+        <Card style={{ marginBottom: 32 }} flex justify="space-between" align="center" padding="16px 24px">
+          <View flex gap={8}>
             {['ALL', 'INCOME', 'EXPENSE'].map((f) => (
-              <button
+              <Button
+                variant="ghost"
                 key={f}
                 onClick={() => setFilter(f as any)}
                 style={{
-                  padding: '8px 24px',
-                  borderRadius: '10px',
-                  backgroundColor: filter === f ? 'var(--accent-primary)' : '#f0f2f5',
-                  color: filter === f ? 'white' : 'var(--text-primary)',
-                  fontSize: '0.85rem',
+                  backgroundColor: filter === f ? '#4285F4' : '#f0f2f5',
+                  color: filter === f ? 'white' : '#333333',
+                  fontSize: 14,
                   fontWeight: 600,
                   transition: 'all 0.2s'
                 }}
               >
                 {f.charAt(0) + f.slice(1).toLowerCase()}
-              </button>
+              </Button>
             ))}
-          </div>
-          <div style={{ position: 'relative', width: '320px' }}>
-            <Search size={16} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-            <input
+          </View>
+          <View style={{ position: 'relative', width: 320 }}>
+            <Search size={16} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#848484' }} />
+            <Input
               type="text"
               style={{
-                paddingLeft: '44px',
-                paddingRight: '16px',
+                paddingLeft: 44,
+                paddingRight: 16,
                 backgroundColor: '#f0f2f5',
                 border: '1px solid #ccc',
-                borderRadius: '10px',
+                borderRadius: 10,
                 width: '100%',
-                paddingTop: '10px',
-                paddingBottom: '10px'
+                paddingTop: 10,
+                paddingBottom: 10
               }}
               placeholder="Search transactions..."
             />
-          </div>
-        </div>
+          </View>
+        </Card>
 
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid var(--line)', color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                <th style={{ padding: '16px 24px' }}>Date</th>
-                <th style={{ padding: '16px 24px' }}>Transaction</th>
-                <th style={{ padding: '16px 24px' }}>Category / Contact</th>
-                <th style={{ padding: '16px 24px', textAlign: 'right' }}>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
+        <Card style={{ padding: 0, overflow: 'hidden' }}>
+          <Table>
+            <TableHeader>
+              <TableRow header>
+                <TableHead>Date</TableHead>
+                <TableHead>Transaction</TableHead>
+                <TableHead>Category / Contact</TableHead>
+                <TableHead align="right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {filteredTransactions.map((tx, idx) => (
-                <tr key={idx} style={{ borderBottom: '1px solid var(--line)', transition: 'background 0.2s' }}>
-                  <td style={{ padding: '16px 24px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-secondary)' }}>
+                <TableRow key={idx}>
+                  <TableCell>
+                    <View flex align="center" gap={12} style={{ color: '#848484' }}>
                       <Calendar size={16} />
-                      <span style={{ fontSize: '0.9rem' }}>{new Date(tx.date).toLocaleDateString()}</span>
-                    </div>
-                  </td>
-                  <td style={{ padding: '16px 24px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '10px',
-                        backgroundColor: tx.type === 'INCOME' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
+                      <Text size={15}>{new Date(tx.date).toLocaleDateString()}</Text>
+                    </View>
+                  </TableCell>
+                  <TableCell>
+                    <View flex align="center" gap={16}>
+                      <View style={{
+                        width: 40,
+                        height: 40,
+                        backgroundColor: tx.type === 'INCOME' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'
+                      }} borderRadius={10} flex align="center" justify="center">
                         {tx.type === 'INCOME' ? <ArrowDownLeft color="#10b981" size={18} /> : <ArrowUpRight color="#ef4444" size={18} />}
-                      </div>
-                      <div>
-                        <p style={{ fontWeight: 600, fontSize: '0.95rem' }}>{tx.description}</p>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{tx.type}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ padding: '16px 24px' }}>
-                    <span style={{
+                      </View>
+                      <View>
+                        <Text weight={600} size={15}>{tx.description}</Text>
+                        <Text size={13} color="#848484">{tx.type}</Text>
+                      </View>
+                    </View>
+                  </TableCell>
+                  <TableCell>
+                    <Text variant="caption" style={{
                       padding: '4px 12px',
-                      borderRadius: '20px',
+                      borderRadius: 20,
                       backgroundColor: '#f1f5f9',
-                      fontSize: '0.8rem',
+                      fontSize: 13,
                       color: '#475569',
                       fontWeight: 500
                     }}>
                       {tx.fromOrTo}
-                    </span>
-                  </td>
-                  <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                    <p style={{
-                      fontWeight: 700,
-                      color: tx.type === 'INCOME' ? '#10b981' : 'var(--text-primary)',
-                      fontSize: '1.05rem'
+                    </Text>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Text weight={700} size={17} style={{
+                      color: tx.type === 'INCOME' ? '#10b981' : '#333333'
                     }}>
                       {tx.type === 'INCOME' ? '+' : '-'}{tx.amount.toLocaleString('ro-RO')} RON
-                    </p>
-                  </td>
-                </tr>
+                    </Text>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
+
           {filteredTransactions.length === 0 && !loading && (
-            <div style={{ textAlign: 'center', padding: '80px', color: 'var(--text-secondary)' }}>
-              <History size={48} style={{ opacity: 0.2, marginBottom: '20px' }} />
-              <p>No transactions found.</p>
-            </div>
+            <View flex direction="column" align="center" justify="center" style={{ padding: 80 }}>
+              <History size={48} style={{ opacity: 0.2, marginBottom: 20 }} />
+              <Text color="#848484">No transactions found.</Text>
+            </View>
           )}
-        </div>
-      </div>
+        </Card>
+      </View>
     </Layout>
   );
-};
-
-export default TransactionHistoryPage;
+}

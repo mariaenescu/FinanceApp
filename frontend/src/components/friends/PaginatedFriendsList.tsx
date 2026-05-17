@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Card, View, Text, Button, Input } from '../ui';
 
 interface Friend {
   fullName: string;
@@ -13,11 +14,11 @@ interface PaginatedFriendsListProps {
   onValidationError: (msg: string) => void;
 }
 
-const PaginatedFriendsList: React.FC<PaginatedFriendsListProps> = ({
+export default function PaginatedFriendsList({
   friends,
   onSendMoney,
   onValidationError
-}) => {
+}: PaginatedFriendsListProps) {
   const [page, setPage] = useState(1);
   const pageSize = 6;
   const totalPages = Math.max(1, Math.ceil(friends.length / pageSize));
@@ -60,132 +61,58 @@ const PaginatedFriendsList: React.FC<PaginatedFriendsListProps> = ({
     name.split(' ').filter(Boolean).map(w => w[0]?.toUpperCase()).join('');
 
   return (
-    <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h2 style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0 }}>Friends ({friends.length})</h2>
-      </div>
+    <Card flex direction="column" style={{ height: '100%' }} padding={24}>
+      <View flex align="center" justify="space-between" style={{ marginBottom: 20 }}>
+        <Text variant="h2" size={18}>Friends ({friends.length})</Text>
+      </View>
 
-      <div style={{ display: 'grid', gap: '12px', flex: 1 }}>
+      <View grid gap={12} style={{ flex: 1 }}>
         {pageItems.map((f) => (
-          <div key={f.iban} style={{
-            background: 'white',
-            border: '1px solid var(--line)',
-            borderRadius: '16px',
-            padding: '16px',
-            display: 'grid',
-            gridTemplateColumns: '1fr auto',
-            gap: '12px',
-            position: 'relative',
-            transition: '120ms ease',
-            boxShadow: sendFor === f.iban ? '0 8px 20px -4px rgba(0,0,0,0.08)' : 'none'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '9999px',
-                display: 'grid',
-                placeItems: 'center',
-                fontWeight: 800,
-                color: '#fff',
-                background: '#2563eb'
-              }}>
+          <View key={f.iban} bg="#ffffff" border="1px solid #e5e7eb" borderRadius={12} padding={16} grid gridCols="1fr auto" gap={12} align="center">
+            <View flex align="center" gap={14}>
+              <View style={{ width: 42, height: 42, fontWeight: 700, color: '#fff', background: '#4285F4' }} borderRadius={12} flex align="center" justify="center">
                 {getInitials(f.fullName)}
-              </div>
-              <div style={{ display: 'grid', gap: '4px' }}>
-                <div style={{ fontWeight: 700 }}>{f.fullName}</div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{f.email}</div>
-              </div>
-            </div>
+              </View>
+              <View grid gap={2}>
+                <Text weight={600} size={15}>{f.fullName}</Text>
+                <Text color="#848484" size={14}>{f.email}</Text>
+              </View>
+            </View>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button 
-                onClick={() => toggleSend(f.iban)}
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
-                  display: 'grid',
-                  placeItems: 'center',
-                  background: sendFor === f.iban ? 'var(--accent-primary)' : 'transparent',
-                  color: sendFor === f.iban ? 'white' : 'var(--text-secondary)',
-                  border: '1px solid var(--line)'
-                }}
-              >
+            <View flex align="center" gap={8}>
+              <Button variant="icon" onClick={() => toggleSend(f.iban)} style={{ width: 38, height: 38, background: sendFor === f.iban ? '#4285F4' : '#e3eaf6', color: sendFor === f.iban ? 'white' : '#4285F4', transition: 'all 0.2s' }}>
                 {sendFor === f.iban ? <X size={18} /> : <Send size={18} />}
-              </button>
-            </div>
+              </Button>
+            </View>
 
             {sendFor === f.iban && (
-              <div style={{
-                gridColumn: '1 / -1',
-                display: 'flex',
-                gap: '10px',
-                alignItems: 'center',
-                marginTop: '8px',
-                padding: '10px',
-                border: '1px dashed var(--line)',
-                borderRadius: '10px',
-                backgroundColor: 'white'
-              }}>
-                <input
-                  type="number"
-                  placeholder="Amount"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendAndClose(f)}
-                  style={{ width: '100px', padding: '8px', borderRadius: '6px', border: '1px solid var(--line)' }}
-                />
-                <input
-                  type="text"
-                  placeholder="Message (opt)"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendAndClose(f)}
-                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid var(--line)' }}
-                />
-                <button 
-                  className="btn-primary"
-                  style={{ width: 'auto', padding: '8px 16px', borderRadius: '6px' }}
-                  onClick={() => handleSendAndClose(f)}
-                >
-                  Send
-                </button>
-              </div>
+              <View style={{ gridColumn: '1 / -1', marginTop: 12, backgroundColor: '#f0f2f5' }} flex gap={12} align="center" padding={16} border="1px solid #e5e7eb" borderRadius={10}>
+                <Input type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendAndClose(f)} style={{ width: 110, padding: 10, borderRadius: 8, fontSize: 14 }} />
+                <Input type="text" placeholder="Message (optional)" value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendAndClose(f)} style={{ flex: 1, padding: 10, borderRadius: 8, fontSize: 14 }} />
+                <Button variant="primary" style={{ width: 'auto', padding: '10px 20px', margin: 0, borderRadius: 8 }} onClick={() => handleSendAndClose(f)}>Send</Button>
+              </View>
             )}
-          </div>
+          </View>
         ))}
 
         {friends.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
-            No friends found.
-          </div>
+          <View style={{ textAlign: 'center', padding: '40px 0' }}>
+            <Text color="#848484">No friends found.</Text>
+          </View>
         )}
-      </div>
+      </View>
 
       {totalPages > 1 && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px', marginTop: '16px' }}>
-          <button 
-            disabled={page === 1}
-            onClick={() => setPage(p => p - 1)}
-            style={{ padding: '4px', borderRadius: '6px', opacity: page === 1 ? 0.3 : 1 }}
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-            {page} / {totalPages}
-          </span>
-          <button 
-            disabled={page === totalPages}
-            onClick={() => setPage(p => p + 1)}
-            style={{ padding: '4px', borderRadius: '6px', opacity: page === totalPages ? 0.3 : 1 }}
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
+        <View flex align="center" justify="flex-end" gap={12} style={{ marginTop: 20 }}>
+          <Button variant="icon" disabled={page === 1} onClick={() => setPage(p => p - 1)} style={{ padding: '6px 12px', background: '#e3eaf6', color: '#4285F4', opacity: page === 1 ? 0.5 : 1 }}>
+            <ChevronLeft size={18} />
+          </Button>
+          <Text size={14} color="#848484" weight={600}>{page} / {totalPages}</Text>
+          <Button variant="icon" disabled={page === totalPages} onClick={() => setPage(p => p + 1)} style={{ padding: '6px 12px', background: '#e3eaf6', color: '#4285F4', opacity: page === totalPages ? 0.5 : 1 }}>
+            <ChevronRight size={18} />
+          </Button>
+        </View>
       )}
-    </div>
+    </Card>
   );
-};
-
-export default PaginatedFriendsList;
+}
